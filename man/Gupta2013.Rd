@@ -4,28 +4,27 @@
 \name{Gupta2013}
 \alias{Gupta2013}
 \title{Network meta-analysis comparing interventions for actinic keratosis}
-\format{A data frame in contrast format with the following columns:
+\format{
+A data frame in contrast format with the following columns:
 \tabular{rl}{
 \bold{\emph{logOR}}\tab log odds ratio \cr
 \bold{\emph{selogOR}}\tab standard error of log odds ratio \cr
 \bold{\emph{id}}\tab study ID \cr
 \bold{\emph{t1}}\tab first treatment \cr
 \bold{\emph{t2}}\tab second treatment
-}}
+}
+}
 \source{
 Gupta AK, Paquet M (2013):
-Network meta-analysis of the outcome ‘participant complete
-clearance’ in nonimmunosuppressed participants of eight
+Network meta-analysis of the outcome participant complete
+clearance in nonimmunosuppressed participants of eight
 interventions for actinic keratosis: a follow-up on a Cochrane
 review.
 \emph{British Journal of Dermatology},
 \bold{169}, 250--9
 }
-\usage{
-Gupta2013
-}
 \description{
-Example of network meta-analysis with inconsistency.
+Network meta-analysis dataset for comparing interventions for actinic keratosis.
 }
 \details{
 The dataset compares the relative effects of nine interventions:
@@ -40,28 +39,27 @@ The dataset compares the relative effects of nine interventions:
   (treatment 6),
 \item 5-fluorouracil (5-FU) 5.0 percent (treatment 7),
 \item cryotherapy (treatment 8),
-\item ingenol mebutate (IMB) 0.015–0.05 percent (treatment 9).
+\item ingenol mebutate (IMB) 0.015-0.05 percent (treatment 9).
 }
 
 The outcome is the number of individuals with participant complete
-clearance or an equivalent efficacy. These data are in contrast
-format with effect size odds ratio (OR) and its standard
-error. Arm-level data used in Gupta and Paquet (2013).
+clearance or equivalent efficacy. These data are in contrast
+format with effect size the odds ratio (OR).
+The arm-level data were used in Gupta and Paquet (2013).
 }
 \examples{
-data(Gupta2013)
 \donttest{
-# Conduct forward search algorithm for the network of actinic
-# keratosis
+data(Gupta2013)
+# Conduct forward search algorithm for the network of actinic keratosis
 #
-FSresult <- NMAoutlier(logOR, selogOR, t1, t2, id, data = Gupta2013)
+FSresult <- NMAoutlier(logOR, selogOR, t1, t2, id, data = Gupta2013, n_cores = 2)
 
-# Draw forward plot for z-values from difference of direct and
+# Plovide the forward plot for z-values from difference of direct and
 # indirect evidence
 #
 fwdplot(FSresult, "nsplit")
 
-# Draw forward plot for Q statistic
+# Provide forward plot for Q statistic
 #
 fwdplot(FSresult, "Q")
 }

@@ -1,16 +1,14 @@
-#' Forward search algorithm in network meta-analysis
+#' Forward Search algorithm in network meta-analysis
 #'
 #' @description
-#' Employs the forward search algorithm for detection of outlying
-#' studies (studies with extreme results) fitted in network
-#' meta-analysis model from graph-theory. This is a diagnostic tool
-#' for detection evidence of outliers. It can also be used to detect
-#' studies that are potential sources for heterogeneity and
-#' inconsistency.
+#' This function employs the Forward Search algorithm to detect outliers
+#' and influential studies fitted in network meta-analysis model from graph-theory.
+#' This is an outlying diagnostic tool to detect outliers and studies that are potential
+#' sources for heterogeneity and inconsistency in network meta-analysis.
 #'
 #' Monitoring measures during the search are:
 #' \itemize{
-#' \item outlying measures (standardized residuals, Cook's distance,
+#' \item outlier detection measures (standardized residuals, Cook's distance,
 #'   ratio of variance);
 #' \item ranking measures (P-scores);
 #' \item heterogeneity and inconsistency measures (Q statistics for
@@ -19,12 +17,15 @@
 #'   between direct and indirect evidence by back-calculation method).
 #' }
 #'
-#' A description of the methodology can be found in Petropoulou et
-#' al. (2019).
+#' A description of the outlier detection methodology can be found in Petropoulou et
+#' al. (2021).
 #'
 #' @param TE Estimate of treatment effect, i.e. difference between
 #'   first and second treatment (e.g. log odds ratio, mean difference,
-#'   or log hazard ratio).
+#'   or log hazard ratio). This can also be a pairwise object
+#'   (i.e. the result of pairwise function of netmeta package).
+#'   In this case, the pairwise object should include the following:
+#'   TE, seTE, treat1, treat2, studlab
 #' @param seTE Standard error of treatment estimate.
 #' @param treat1 Label/Number for first treatment.
 #' @param treat2 Label/Number for second treatment.
@@ -51,6 +52,8 @@
 #' @param sm A character string indicating underlying summary measure,
 #'   e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},
 #'   \code{"HR"}, \code{"MD"}, \code{"SMD"}, or \code{"ROM"}.
+#' @param Isub A vector for the studies to be included in the initial subset (default: NULL, the initial subset
+#'   not specified by the user).
 #' @param reference Reference treatment group.
 #' @param small.values A character string indicating if small values
 #'   are considered beneficial (option:"good") or harmfull
@@ -62,33 +65,28 @@
 #'   using all the available cores)
 #'
 #' @details
-#' Description of methodology by fitting forward search algorithm in
-#' network meta-analysis. Methodology of FS algorithm fitted in NMA
-#' model from graph theory is described in Petropoulou et al. 2019.
+#' FS algorithm for network meta-analysis
+#' model from graph theory is described in Petropoulou et al. (2021).
 #'
-#' Let \emph{n} be the number of treatments in a network and let
+#' Let \emph{n} be the number of treatments and let
 #' \emph{m} be the number of pairwise treatment comparisons.  If there
-#' are only two-arm studies, \emph{m} is the number of studies.  Let
+#' are only two-arm studies, \emph{m} is equal to the number of studies. Let
 #' TE and seTE be the vectors of observed effects and their standard
 #' errors.  Comparisons belonging to multi-arm studies are identified
-#' by identical study labels (argument \code{studlab}). It is
-#' therefore important to use identical study labels for all
-#' comparisons belonging to the same multi-arm study.
+#' by identical study labels (argument \code{studlab}).
 #'
-#' The FS algorithm is a diagnostic iterative procedure.  FS algorithm
-#' aparts from three steps. It starts with a subset of studies and it
+#' The FS algorithm is an outlier diagnostic iterative procedure. FS algorithm
+#' apart from three steps. It starts with a subset of studies and it
 #' gradually adds studies until all studies entered.  After the
-#' search, statistical measures are monitored for sharp changes. FS is
-#' a diagnostic method to identify outlying studies.
+#' search, statistical measures are monitored for sharp changes.
 #'
-#' FS algorithm starts with an initial subset of the dataset that is
-#' considered to be outlier-free.  Let \emph{l} the size of the
-#' initial subset.  Let (argument \code{P}) (eg. \emph{P} = 100) a
+#' In more detail, the FS algorithm starts with an initial subset of the dataset with
+#' size \emph{l}.  Let (argument \code{P}) (eg. \emph{P} = 100) a
 #' large number of candidate subset of studies with size \emph{l}.
 #' The candidate subset that optimize the criterion (argument
-#' \code{crit1}) is taken as the initial subset (considered
+#' \code{crit1}) is taken as the initial subset (considered ideally to be
 #' outlying-free).  Criterion (\code{crit1}) to be used for selecting
-#' the initial subset, may be the minimum of median absolute residuals
+#' the initial subset, can be the minimum of median absolute residuals
 #' \code{"R"} or the maximum of median absolute likelihood
 #' contributions \code{"L"}.  It is conventionally refer this subset
 #' as basic set, whereas the remaining studies constitute the
@@ -99,33 +97,32 @@
 #' hypothesized model fit in the basic set.  A study from non-basic
 #' set entered into the basic set if optimize the criterion (argument
 #' \code{crit2}).  Criterion (\code{crit2}) for selecting the study
-#' from non-basic to basic set may be the minimum of absolute
-#' residuals \code{"R"} or the maximum of absolute likelihood
+#' from non-basic to basic set may be the minimum of median absolute
+#' residuals \code{"R"} or the maximum of median absolute likelihood
 #' contributions \code{"L"}.  The algorithm order the studies
 #' according to their closeness to the basic set by adding the study
 #' that optimize the criterion from non-basic set to basic set.
 #'
-#' The process is repeated until all studies are entered in the basic
+#' The process is repeated until all studies are entered into the basic
 #' set.  The number of iterations of algorithm \emph{index} is equal
 #' to the total number of studies minus the number of studies entered
-#' into the initial subset.  When all studies are included in the
-#' basic set, parameter estimates (summary estmates, heterogeneity
+#' into the initial subset. Through the FS procedure,
+#' parameter estimates (summary estmates, heterogeneity
 #' estimator) and other statistics of interest (outlying measures,
 #' heterogeneity and inconsistency measures, ranking measures) are
-#' monitored.  For each basic set, network meta-analysis model from
-#' graph theory (Rücker, 2012) is fitted (\code{netmeta} function)
-#' with R package \bold{netmeta} (Rücker et al., 2018).
+#' monitored. In each iteration, network meta-analysis model from
+#' graph theory [Rucker, 2012] is fitted (\code{netmeta} function)
+#' with R package \bold{netmeta} [Rucker et al., 2018].
 #'
-#' Monitoring is helpful to identify outlying studies Monitoring
-#' statistical measures for the basic set in each FS iteration can be:
+#' Monitoring statistical measures for each FS iteration can be:
 #'
-#' \bold{Outlying case diagnostics measures:}
+#' \bold{Outlying detection measures:}
 #' Standardized residuals (arithmetic mean in case of multi-arm
 #' studies); Cook's statistic; Ratio of determinants of
 #' variance-covariance matrix
 #'
 #' \bold{Ranking measures:}
-#' P-scores for ranking of treatments (Rücker G & Schwarzer G (2015))
+#' P-scores for ranking of treatments [Rucker G & Schwarzer G (2015)]
 #' for each basic set with implementation of (\code{netrank} function)
 #' from R package \bold{netmeta}.
 #'
@@ -137,15 +134,13 @@
 #' model with square-root of between-study variance estimated embedded
 #' in a full design-by-treatment interaction model.  Implementation
 #' with (\code{decomp.design} function) from R package \bold{netmeta};
-#' Z-values for comparison between direct and indirect evidence for
+#' Z-values [Dias et al., 2010; Konig et al., 2013] for comparison
+#' between direct and indirect evidence in
 #' each iteration of forward search algorithm.  By monitoring
 #' difference of direct and indirect evidence, potential sources of
 #' consistency can be detected with the implementation of
 #' (\code{netsplit} function) from R package \bold{netmeta} for each
-#' basic set of the search.  Based on the methodology with
-#' back-calculation method to derive indirect estimates from direct
-#' pairwise comparisons and network estimates (Dias et al., 2010;
-#' König et al., 2013).
+#' iteration of the search.
 #'
 #' @return
 #' An object of class \code{NMAoutlier}; a list containing the
@@ -177,29 +172,29 @@
 #' \emph{Statistics in Medicine},
 #' \bold{29}, 932--44
 #'
-#' König J, Krahn U, Binder H (2013):
+#' Konig J, Krahn U, Binder H (2013):
 #' Visualizing the flow of evidence in network meta-analysis and
 #' characterizing mixed treatment comparisons.
 #' \emph{Statistics in Medicine},
 #' \bold{32}, 5414--29
 #'
-#' Krahn U, Binder H, König J (2013):
+#' Krahn U, Binder H, Konig J (2013):
 #' A graphical tool for locating inconsistency in network meta-analyses.
 #' \emph{BMC Medical Research Methodology},
 #' \bold{13}, 35
 #'
-#' Petropoulou M, Salanti G, Rücker G, Schwarzer G, Moustaki I,
-#' Mavridis D (2019):
+#' Petropoulou M, Salanti G, Rucker G, Schwarzer G, Moustaki I,
+#' Mavridis D (2021):
 #' A forward search algorithm for detection of extreme study effects
 #' in network meta-analysis.
 #' \emph{Manuscript}
 #'
-#' Rücker G (2012):
+#' Rucker G (2012):
 #' Network meta-analysis, electrical networks and graph theory.
 #' \emph{Research Synthesis Methods},
 #' \bold{3}, 312--24
 #'
-#' Rücker G, Schwarzer G (2015):
+#' Rucker G, Schwarzer G (2015):
 #' Ranking treatments in frequentist network meta-analysis works
 #' without resampling methods.
 #' \emph{BMC Medical Research Methodology},
@@ -218,12 +213,12 @@
 #'
 #' # Forward search algorithm
 #' #
-#' FSresult <- NMAoutlier(p1, P = 1, small.values = "bad", n_cores = 2)
+#' FSresult <- NMAoutlier(p1, Isub = c(1, 2, 3), small.values = "bad", n_cores = 2)
 #'
 #' \dontrun{
 #' data(smokingcessation, package = "netmeta")
 #'
-#' # Transform data from arm-based format to contrast-based format
+#' # Transform data from arm-based to contrast-based format
 #' # We use 'sm' argument for odds ratios.
 #' # We use function pairwise from netmeta package
 #' #
@@ -251,7 +246,7 @@
 #'
 #' @export
 #'
-#' @author Maria Petropoulou <mpetrop@cc.uoi.gr>
+#' @author Maria Petropoulou <petropoulou@imbi.uni-freiburg.de>
 #'
 #' @importFrom netmeta netconnection netmeta
 #' @importFrom MASS ginv
@@ -263,6 +258,7 @@ NMAoutlier <- function(TE, seTE, treat1, treat2, studlab,
                        studies = NULL,
                        P = 100,
                        sm,
+                       Isub = NULL,
                        reference = "", small.values = "good", n_cores = NULL) {
 
 
@@ -473,7 +469,6 @@ NMAoutlier <- function(TE, seTE, treat1, treat2, studlab,
 
   ## Names of comparisons
   ##
-  ## Connection to netsplit() ?
   ##
   names.comp <- c() # rep("", )
   k <- 0
@@ -519,15 +514,16 @@ NMAoutlier <- function(TE, seTE, treat1, treat2, studlab,
     ## study that inputed from non-basic to basic set
     subset <- NULL
 
-
-    ## Take the initial subset
-    Isub <- InitialSubset(TE, seTE, treat1, treat2, studlab,
-                          crit1, studies, P, reference,
-                          t1.label, t2.label, n_cores)
+    if (is.null(Isub)){
+      ## Take the initial subset
+      Isub <- c(InitialSubset(TE, seTE, treat1, treat2, studlab,
+                              crit1, studies, P, reference,
+                              t1.label, t2.label, n_cores)$set)
+    }
 
     ## Define the initial basic set
     ##
-    bs <- c(Isub$set)
+    bs <- Isub
     ##
     ## indices of basic set
     ##
@@ -576,7 +572,7 @@ NMAoutlier <- function(TE, seTE, treat1, treat2, studlab,
         ##
         mi <- ma <- c()
         ##
-        ## Conduct network meta-analysis (NMA) with random effects model, Rücker model
+        ## Conduct network meta-analysis (NMA) with random effects model, Rucker model
         ##
         model <- netmeta(TE, seTE, treat1, treat2, studlab,
                          comb.random = TRUE, reference.group = reference,
@@ -688,7 +684,7 @@ NMAoutlier <- function(TE, seTE, treat1, treat2, studlab,
     ##
     ## length of the initial basic set
     ##
-    length.initial <- length(Isub$set)
+    length.initial <- length(Isub)
     int <- rep(1, length.initial)
     iteration <- c(int, 2:index)
     ##
@@ -701,7 +697,7 @@ NMAoutlier <- function(TE, seTE, treat1, treat2, studlab,
     rownames(dat) <- c(1:length(TE))
     ##
     colnames(estb) <- colnames(lb) <- colnames(ub) <- colnames(dif) <-
-      colnames(p.score) <- colnames(estand) <- paste("it=", 1:index)
+    colnames(p.score) <- colnames(estand) <- paste("it=", 1:index)
     ##
     rownames(dif) <- names.comp
     rownames(estand) <- paste(bs)
