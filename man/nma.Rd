@@ -4,7 +4,7 @@
 \alias{nma}
 \title{Network meta-analysis for the whole dataset.}
 \usage{
-nma(TE, seTE, treat1, treat2, studlab, reference, names.treat)
+nma(TE, seTE, treat1, treat2, studlab, reference, names.treat, ...)
 }
 \arguments{
 \item{TE}{Estimate of treatment effect, i.e. difference between
@@ -25,8 +25,8 @@ included).}
 \item{names.treat}{names of treatments}
 }
 \value{
-within-study standard error, design matrix, summary
-  estimate, heterogeneity from network meta-analysis.
+Within-study standard error, design matrix, summary estimate,
+heterogeneity from network meta-analysis.
 }
 \description{
 Conduct network meta-analysis (Rücker model) for the whole dataset.

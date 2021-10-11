@@ -19,16 +19,17 @@ NMAoutlier(
   Isub = NULL,
   reference = "",
   small.values = "good",
-  n_cores = NULL
+  n_cores = NULL,
+  ...
 )
 }
 \arguments{
 \item{TE}{Estimate of treatment effect, i.e. difference between
 first and second treatment (e.g. log odds ratio, mean difference,
 or log hazard ratio). This can also be a pairwise object
-(i.e. the result of pairwise function of netmeta package).
-In this case, the pairwise object should include the following:
-TE, seTE, treat1, treat2, studlab}
+(i.e. the result of pairwise function of netmeta package).  In
+this case, the pairwise object should include the following: TE,
+seTE, treat1, treat2, studlab}
 
 \item{seTE}{Standard error of treatment estimate.}
 
@@ -66,8 +67,9 @@ choice of the initial subset. Default value is 100.}
 e.g., \code{"RD"}, \code{"RR"}, \code{"OR"}, \code{"ASD"},
 \code{"HR"}, \code{"MD"}, \code{"SMD"}, or \code{"ROM"}.}
 
-\item{Isub}{A vector for the studies to be included in the initial subset (default: NULL, the initial subset
-not specified by the user).}
+\item{Isub}{A vector for the studies to be included in the initial
+subset (default: NULL, the initial subset not specified by the
+user).}
 
 \item{reference}{Reference treatment group.}
 
@@ -78,8 +80,11 @@ computation. The default value is considered benefial outcome
 ("good").}
 
 \item{n_cores}{The number of cores that the process is running
-using the parallel (default: NULL, the process is running
-using all the available cores)}
+using the parallel (default: NULL, the process is running using
+all the available cores)}
+
+\item{\dots}{Additional arguments passed on to
+\code{\link{netmeta}}.}
 }
 \value{
 An object of class \code{NMAoutlier}; a list containing the
@@ -106,15 +111,16 @@ following components:
    \item{call}{Function call}
 }
 \description{
-This function employs the Forward Search algorithm to detect outliers
-and influential studies fitted in network meta-analysis model from graph-theory.
-This is an outlying diagnostic tool to detect outliers and studies that are potential
-sources for heterogeneity and inconsistency in network meta-analysis.
+This function employs the Forward Search algorithm to detect
+outliers and influential studies fitted in network meta-analysis
+model from graph-theory.  This is an outlying diagnostic tool to
+detect outliers and studies that are potential sources for
+heterogeneity and inconsistency in network meta-analysis.
 
 Monitoring measures during the search are:
 \itemize{
-\item outlier detection measures (standardized residuals, Cook's distance,
-  ratio of variance);
+\item outlier detection measures (standardized residuals, Cook's
+  distance, ratio of variance);
 \item ranking measures (P-scores);
 \item heterogeneity and inconsistency measures (Q statistics for
   overall heterogeneity / inconsistency, inconsistency by
@@ -122,36 +128,37 @@ Monitoring measures during the search are:
   between direct and indirect evidence by back-calculation method).
 }
 
-A description of the outlier detection methodology can be found in Petropoulou et
-al. (2021).
+A description of the outlier detection methodology can be found in
+Petropoulou et al. (2021).
 }
 \details{
-FS algorithm for network meta-analysis
-model from graph theory is described in Petropoulou et al. (2021).
+FS algorithm for network meta-analysis model from graph theory is
+described in Petropoulou et al. (2021).
 
-Let \emph{n} be the number of treatments and let
-\emph{m} be the number of pairwise treatment comparisons.  If there
-are only two-arm studies, \emph{m} is equal to the number of studies. Let
-TE and seTE be the vectors of observed effects and their standard
+Let \emph{n} be the number of treatments and let \emph{m} be the
+number of pairwise treatment comparisons.  If there are only
+two-arm studies, \emph{m} is equal to the number of studies. Let TE
+and seTE be the vectors of observed effects and their standard
 errors.  Comparisons belonging to multi-arm studies are identified
 by identical study labels (argument \code{studlab}).
 
-The FS algorithm is an outlier diagnostic iterative procedure. FS algorithm
-apart from three steps. It starts with a subset of studies and it
-gradually adds studies until all studies entered.  After the
-search, statistical measures are monitored for sharp changes.
+The FS algorithm is an outlier diagnostic iterative procedure. FS
+algorithm apart from three steps. It starts with a subset of
+studies and it gradually adds studies until all studies entered.
+After the search, statistical measures are monitored for sharp
+changes.
 
-In more detail, the FS algorithm starts with an initial subset of the dataset with
-size \emph{l}.  Let (argument \code{P}) (eg. \emph{P} = 100) a
-large number of candidate subset of studies with size \emph{l}.
-The candidate subset that optimize the criterion (argument
-\code{crit1}) is taken as the initial subset (considered ideally to be
-outlying-free).  Criterion (\code{crit1}) to be used for selecting
-the initial subset, can be the minimum of median absolute residuals
-\code{"R"} or the maximum of median absolute likelihood
-contributions \code{"L"}.  It is conventionally refer this subset
-as basic set, whereas the remaining studies constitute the
-non-basic set.
+In more detail, the FS algorithm starts with an initial subset of
+the dataset with size \emph{l}. Let (argument \code{P})
+(eg. \emph{P} = 100) a large number of candidate subset of studies
+with size \emph{l}. The candidate subset that optimize the
+criterion (argument \code{crit1}) is taken as the initial subset
+(considered ideally to be outlying-free).  Criterion (\code{crit1})
+to be used for selecting the initial subset, can be the minimum of
+median absolute residuals \code{"R"} or the maximum of median
+absolute likelihood contributions \code{"L"}. It is conventionally
+refer this subset as basic set, whereas the remaining studies
+constitute the non-basic set.
 
 The FS algorithm gradually adds studies from the non-basic to the
 basic subset based on how close the former studies are to the
@@ -164,16 +171,16 @@ contributions \code{"L"}.  The algorithm order the studies
 according to their closeness to the basic set by adding the study
 that optimize the criterion from non-basic set to basic set.
 
-The process is repeated until all studies are entered into the basic
-set.  The number of iterations of algorithm \emph{index} is equal
-to the total number of studies minus the number of studies entered
-into the initial subset. Through the FS procedure,
-parameter estimates (summary estmates, heterogeneity
-estimator) and other statistics of interest (outlying measures,
-heterogeneity and inconsistency measures, ranking measures) are
-monitored. In each iteration, network meta-analysis model from
-graph theory [Rucker, 2012] is fitted (\code{netmeta} function)
-with R package \bold{netmeta} [Rucker et al., 2018].
+The process is repeated until all studies are entered into the
+basic set.  The number of iterations of algorithm \emph{index} is
+equal to the total number of studies minus the number of studies
+entered into the initial subset. Through the FS procedure,
+parameter estimates (summary estmates, heterogeneity estimator) and
+other statistics of interest (outlying measures, heterogeneity and
+inconsistency measures, ranking measures) are monitored. In each
+iteration, network meta-analysis model from graph theory (Rücker,
+2012) is fitted (\code{netmeta} function) with R package
+\bold{netmeta}.
 
 Monitoring statistical measures for each FS iteration can be:
 
@@ -183,19 +190,19 @@ studies); Cook's statistic; Ratio of determinants of
 variance-covariance matrix
 
 \bold{Ranking measures:}
-P-scores for ranking of treatments [Rucker G & Schwarzer G (2015)]
+P-scores for ranking of treatments (Rücker G & Schwarzer G, 2015)
 for each basic set with implementation of (\code{netrank} function)
 from R package \bold{netmeta}.
 
 \bold{Heterogeneity and inconsistency measures:}
 Overall heterogeneity / inconsistency Q statistic (\code{Q}) This
 is the design-based decomposition of Cochran Q as provided by Krahn
-et al.(2013); Overall heterogeneity Q statistic (\code{Q});
+et al. (2013); Overall heterogeneity Q statistic (\code{Q});
 Between-designs Q statistic (\code{Q}), based on a random effects
 model with square-root of between-study variance estimated embedded
 in a full design-by-treatment interaction model.  Implementation
 with (\code{decomp.design} function) from R package \bold{netmeta};
-Z-values [Dias et al., 2010; Konig et al., 2013] for comparison
+Z-values (Dias et al., 2010; König et al., 2013) for comparison
 between direct and indirect evidence in
 each iteration of forward search algorithm.  By monitoring
 difference of direct and indirect evidence, potential sources of
@@ -204,6 +211,7 @@ consistency can be detected with the implementation of
 iteration of the search.
 }
 \examples{
+\dontrun{
 data(smokingcessation, package = "netmeta")
 smokingcessation$id <- 1:nrow(smokingcessation)
 
@@ -216,9 +224,9 @@ p1 <- netmeta::pairwise(list(treat1, treat2, treat3),
 
 # Forward search algorithm
 #
-FSresult <- NMAoutlier(p1, Isub = c(1, 2, 3), small.values = "bad", n_cores = 2)
+FSresult <- NMAoutlier(p1, P = 1, small.values = "bad", n_cores = 2)
+FSresult
 
-\dontrun{
 data(smokingcessation, package = "netmeta")
 
 # Transform data from arm-based to contrast-based format
@@ -254,29 +262,29 @@ Checking consistency in mixed treatment comparison meta-analysis.
 \emph{Statistics in Medicine},
 \bold{29}, 932--44
 
-Konig J, Krahn U, Binder H (2013):
+König J, Krahn U, Binder H (2013):
 Visualizing the flow of evidence in network meta-analysis and
 characterizing mixed treatment comparisons.
 \emph{Statistics in Medicine},
 \bold{32}, 5414--29
 
-Krahn U, Binder H, Konig J (2013):
+Krahn U, Binder H, König J (2013):
 A graphical tool for locating inconsistency in network meta-analyses.
 \emph{BMC Medical Research Methodology},
 \bold{13}, 35
 
-Petropoulou M, Salanti G, Rucker G, Schwarzer G, Moustaki I,
+Petropoulou M, Salanti G, Rücker G, Schwarzer G, Moustaki I,
 Mavridis D (2021):
-A forward search algorithm for detection of extreme study effects
-in network meta-analysis.
-\emph{Manuscript}
+A forward search algorithm for detecting extreme study effects in
+network meta-analysis.
+\emph{Statistics in Medicine}
 
-Rucker G (2012):
+Rücker G (2012):
 Network meta-analysis, electrical networks and graph theory.
 \emph{Research Synthesis Methods},
 \bold{3}, 312--24
 
-Rucker G, Schwarzer G (2015):
+Rücker G, Schwarzer G (2015):
 Ranking treatments in frequentist network meta-analysis works
 without resampling methods.
 \emph{BMC Medical Research Methodology},

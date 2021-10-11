@@ -10,14 +10,16 @@ fwdplotest(x)
 \item{x}{object of class NMAoutlier (mandatory).}
 }
 \description{
-Forward plots of summary treatment estimates with their 95 percent confidence
-intervals.
+Forward plots of summary treatment estimates with their 95 percent
+confidence intervals.
 }
 \details{
-Plot of summary treatment estimates and their confidence intervals for each FS
-iteration. Vertical axis provides the FS iterations. Horizontal axis provides summary treatment estimates.
+Plot of summary treatment estimates and their confidence intervals
+for each FS iteration. Vertical axis provides the FS
+iterations. Horizontal axis provides summary treatment estimates.
 }
 \examples{
+\dontrun{
 data(smokingcessation, package = "netmeta")
 smokingcessation$id <- 1:nrow(smokingcessation)
 
@@ -30,12 +32,13 @@ p1 <- netmeta::pairwise(list(treat1, treat2, treat3),
 
 # Forward search algorithm
 #
-FSresult <- NMAoutlier(p1, Isub = c(1, 2, 3), small.values = "bad", n_cores = 2)
+FSresult <- NMAoutlier(p1, P = 1, small.values = "bad", n_cores = 2)
 
-# Forward plot for summary treatment estimates and their confidence intervals
+# Forward plot for summary treatment estimates and their confidence
+# intervals
+#
 fwdplotest(FSresult)
 
-\dontrun{
 data(smokingcessation, package = "netmeta")
 
 # Transform data from arm-based format to contrast-based format

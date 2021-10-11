@@ -9,34 +9,44 @@ measplot(object, stat, measure = "simple")
 \arguments{
 \item{object}{an object of class NMAoutlier.measures (mandatory).}
 
-\item{stat}{selected statistical outlier and influential detection measure (mandatory),
-For simply outlier and influential measures available choices are: ("estand"/ "estud"/ "mah"/ "leverage").
-For outlier and influential deletion measures available choices are: ("estand.deleted", "estud.deleted",
-"leverage.leaveoneout", "weight.leaveoneout", "heterog.leaveoneout", "covratio", "cook",
-"rheterogeneity", "restimates", "rqhet", "rqinc", "rqtotal", "dfbetas")}
+\item{stat}{selected statistical outlier and influential detection
+measure (mandatory), For simply outlier and influential measures
+available choices are: ("estand"/ "estud"/ "mah"/ "leverage").
+For outlier and influential deletion measures available choices
+are: ("estand.deleted", "estud.deleted", "leverage.leaveoneout",
+"weight.leaveoneout", "heterog.leaveoneout", "covratio", "cook",
+"rheterogeneity", "restimates", "rqhet", "rqinc", "rqtotal",
+"dfbetas")}
 
-\item{measure}{Outlier and influential detection measures. Simple measures (default: "simple")
-and measures considered study deletion (measure = "deletion").}
+\item{measure}{Outlier and influential detection measures. Simple
+measures (default: "simple") and measures considered study
+deletion (measure = "deletion").}
 }
 \description{
-This function generates plot(s) of the selected outlier detection measure(s)
-for each study included in the network. Candidate statistics to be monitored are: Standardized residual;
-Studentized residual; Mahalanobis distance and leverage.
+This function generates plot(s) of the selected outlier detection
+measure(s) for each study included in the network. Candidate
+statistics to be monitored are: Standardized residual; Studentized
+residual; Mahalanobis distance and leverage.
 
-The  function also generates plot(s) of the selected outlier detection measure(s)
-considering a deletion of each study included in the network (Shift the mean measures).
-Candidate statistics to be monitored are: Standardized deleted residual;
-Studentized deleted residual; Cook distance between the treatment estimates for study j
-and treatment estimates when study j is removed;
-Ratio of determinants of variance-covariance matrix of treatment estimates for study j to treatment estimates when study j is removed;
-weight leave one out;leverage leave one out; heterogeneity estimator leave one out;
-R statistic for heterogeneity;  R statistic for Q (\code{Qtotal}),  R statistic for  heterogeneity Q
-(\code{Qhet}), R statistic for Qinconsistency (\code{Qinc}), DFbetas.
+The function also generates plot(s) of the selected outlier
+detection measure(s) considering a deletion of each study included
+in the network (Shift the mean measures).  Candidate statistics to
+be monitored are: Standardized deleted residual; Studentized
+deleted residual; Cook distance between the treatment estimates for
+study j and treatment estimates when study j is removed; Ratio of
+determinants of variance-covariance matrix of treatment estimates
+for study j to treatment estimates when study j is removed; weight
+leave one out;leverage leave one out; heterogeneity estimator leave
+one out; R statistic for heterogeneity; R statistic for Q
+(\code{Qtotal}), R statistic for heterogeneity Q (\code{Qhet}), R
+statistic for Qinconsistency (\code{Qinc}), DFbetas.
 }
 \details{
-Plot of outlier and influential (simple or/and deletion) detection measures for each study included in the network.
-Vertical axis provides each study included in the network (or the study deleted for outlier deletion measures). Horizontal axis
-provides a monitoring outlier and influential detection measure.
+Plot of outlier and influential (simple or/and deletion) detection
+measures for each study included in the network.  Vertical axis
+provides each study included in the network (or the study deleted
+for outlier deletion measures). Horizontal axis provides a
+monitoring outlier and influential detection measure.
 }
 \examples{
 data(smokingcessation, package = "netmeta")
@@ -49,7 +59,8 @@ p1 <- netmeta::pairwise(list(treat1, treat2, treat3),
                         data = study912,
                         sm = "OR")
 
-# outlier and influential detection measures for each study in the network
+# Outlier and influential detection measures for each study in the
+# network
 measures <- NMAoutlier.measures(p1)
 
 # plot of standardized residuals for each study
@@ -61,7 +72,9 @@ measplot(measures, "mah")
 # plot of leverage values for each study
 measplot(measures, "leverage")
 
-# outlier detection measures considered deletion each time of an included study
+\dontrun{
+# Outlier detection measures considered deletion each time of an
+# included study
 deletion <- NMAoutlier.measures(p1, measure = "deletion")
 
 # plot for R statistic for heterogeneity estimator
@@ -72,7 +85,7 @@ measplot(deletion, "rqinc", measure = "deletion")
 
 # plot of COVRATIO values when considering deletion for each study
 measplot(deletion, "covratio", measure = "deletion")
-
+}
 
 }
 \author{
