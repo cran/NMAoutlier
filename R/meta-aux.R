@@ -1,7 +1,7 @@
 ## Auxiliary functions
 ##
 ## Package: meta
-## Author: Guido Schwarzer <sc@imbi.uni-freiburg.de>
+## Author: Guido Schwarzer <guido.schwarzer@uniklinik-freiburg.de>
 ## License: GPL (>= 2)
 ##
 bylevs <- function(x) {
@@ -47,10 +47,15 @@ npn <- function(x) {
 }
 replaceNULL <- function(x, replace = NA) {
   if (is.null(x))
-    res <- replace
+    return(replace)
+  x
+}
+replaceNA <- function(x, replace = NA) {
+  if (is.null(x))
+    return(x)
   else
-    res <- x
-  res
+    x[is.na(x)] <- replace
+  x
 }
 warnarg <- function(x, y, fun, cl, otherarg) {
   if (x %in% y)
@@ -74,7 +79,7 @@ catchvar <- function(varname, x, mf) {
                     enclos = sys.frame(sys.parent())),
         silent = TRUE)
   ##
-  if (class(error) == "try-error") {
+  if (inherits(error, "try-error")) {
     res <- eval(mf[[match(varname, names(mf))]],
                 x$data, enclos = NULL)
   }
@@ -129,7 +134,7 @@ deprecated2 <- function(newvar, newmiss, oldvar, oldmiss, warn = TRUE) {
   old <- deparse(substitute(oldvar))
   ##
   if (newmiss & oldmiss)
-    return(NULL)
+    return(newvar)
   else if (!newmiss & oldmiss)
     return(newvar)
   else if (!newmiss & !oldmiss) {
@@ -146,4 +151,8 @@ deprecated2 <- function(newvar, newmiss, oldvar, oldmiss, warn = TRUE) {
               call. = FALSE)
     return(oldvar)
   }
+}
+runNN <- function(func, args) {
+  args <- args[!sapply(args, is.null)]
+  do.call(func, args)
 }
