@@ -28,6 +28,6 @@ Vertical axis provides the iterations of FS algorithm.
 Horizontal axis provides a summary estimate of a treatment.
 }
 \author{
-Maria Petropoulou <maria.petropoulou@uniklinik-freiburg.de>
+Maria Petropoulou <m.petropoulou.a@gmail.com>
 }
 \keyword{internal}

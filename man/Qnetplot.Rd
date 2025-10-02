@@ -46,6 +46,6 @@ developing methodology for outlier detection.
 \emph{PhD dissertation}
 }
 \author{
-Maria Petropoulou <maria.petropoulou@uniklinik-freiburg.de>
+Maria Petropoulou <m.petropoulou.a@gmail.com>
 }
 \keyword{hplot}

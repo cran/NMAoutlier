@@ -69,7 +69,7 @@
 #' @return
 #' An object of class \code{NMAoutlier.measures};
 #' with a list containing the following components when choosing simple measures:
-#'    \item{dat}{Matrix containing the data \code{"TE"}, \code{"seTE"}, \code{"studlab"}, \code{"treat1"}, \code{"treat2"} as defined above.}
+#'    \item{dat}{Matrix containing the data \code{"TE"}, \code{"seTE"}, \code{"studlab.orig"}, \code{"studlab"}, \code{"treat1"}, \code{"treat2"} as defined above.}
 #'    \item{eraw}{Raw residual for each study included in the network.}
 #'    \item{estand}{Standardized residual for each study included in the network.}
 #'    \item{estud}{Studentized residual for each study included in the network.}
@@ -158,7 +158,7 @@
 #'
 #' @export
 #'
-#' @author Maria Petropoulou <maria.petropoulou@uniklinik-freiburg.de>
+#' @author Maria Petropoulou <m.petropoulou.a@gmail.com>
 
 
 NMAoutlier.measures <- function(TE, seTE, treat1, treat2, studlab,
@@ -249,8 +249,11 @@ NMAoutlier.measures <- function(TE, seTE, treat1, treat2, studlab,
   if (is.factor(treat2))
     treat2 <- as.character(treat2)
   ##
+  studlab.orig <- studlab
+  ##
   if (!is.numeric(studlab))
-    studlab <- as.numeric(as.factor(studlab))
+  studlab <- as.numeric(as.factor(studlab))
+
 
 
 
@@ -262,6 +265,7 @@ NMAoutlier.measures <- function(TE, seTE, treat1, treat2, studlab,
   ##
   if (any(excl)) {
     dat.NAs <- data.frame(studlab = studlab[excl],
+                          studlab.orig = studlab.orig[excl],
                           treat1 = treat1[excl],
                           treat2 = treat2[excl],
                           TE = format(round(TE[excl], 4)),
@@ -278,6 +282,7 @@ NMAoutlier.measures <- function(TE, seTE, treat1, treat2, studlab,
              rowlab = rep("", sum(excl)))
     ##
     studlab <- studlab[!(excl)]
+    studlab.orig <- studlab.orig[!(excl)]
     treat1  <- treat1[!(excl)]
     treat2  <- treat2[!(excl)]
     TE      <- TE[!(excl)]
@@ -370,7 +375,7 @@ NMAoutlier.measures <- function(TE, seTE, treat1, treat2, studlab,
 
 
   ##
-  dat <- noquote(cbind(TE, seTE, studlab, treat1, treat2))
+  dat <-  noquote(cbind(TE, seTE, studlab.orig, studlab, treat1, treat2))
   ##
   rownames(dat) <- c(1:length(TE))
   ##
@@ -402,6 +407,8 @@ NMAoutlier.measures <- function(TE, seTE, treat1, treat2, studlab,
     ##
     estand <- res_multi(studlab, standres)$res
 
+    stud_id <- res_multi(studlab, standres)$study
+
     ##
     ## Studentized residuals for each pairwise comparison
     ##
@@ -415,7 +422,6 @@ NMAoutlier.measures <- function(TE, seTE, treat1, treat2, studlab,
     ## Studentized residuals for each study
     ##
     estud <- res_multi(studlab, studres)$res
-
 
     ## Mahalanobis distance for each pairwise comparison
     ##
@@ -437,6 +443,7 @@ NMAoutlier.measures <- function(TE, seTE, treat1, treat2, studlab,
 
 
     res <- list(dat = dat,
+                stud_id = stud_id,
                 eraw = eraw,
                 estand = estand,
                 estud = estud,
@@ -488,9 +495,9 @@ NMAoutlier.measures <- function(TE, seTE, treat1, treat2, studlab,
 
     studies <- unique(studlab)
 
-
     heterog.leaveoneout <- w.leaveoneout <- H.leaveoneout <- eraw.deleted <- estand.deleted <- estud.deleted <- Cooks.distance <- Covratio <- Rstat.heterogeneity <- RQtotal <- RQhet <- RQinc <- list()
     DFbetas <- Rstat.estimates <- NULL
+    stud_id <- NULL
 
     for (i in 1:length(studies)) {
 
@@ -560,9 +567,9 @@ NMAoutlier.measures <- function(TE, seTE, treat1, treat2, studlab,
       # Variance-covariance matrix (random effects model)
       Cov.remove <- Br.remove %*% Lplus %*% t(Br.remove)
 
-
       ## Raw pairwise deleted residuals
       rawres <- c(y.m[ind.deleted] - B[ind.deleted,] %*% estimate)
+
 
       ## Raw study deleted residuals
       eraw.deleted[[i]] <- res_multi(studlab[ind.deleted], rawres)$res
@@ -581,6 +588,8 @@ NMAoutlier.measures <- function(TE, seTE, treat1, treat2, studlab,
       ## Studentized study deleted residuals
       estud.deleted[[i]] <-  res_multi(studlab[ind.deleted], studres)$res
 
+      index <- res_multi(studlab[ind.deleted], studres)$study
+      stud_id <- cbind(stud_id, index)
 
       ## Cook's statistic considered deletion
       Cooks.distance[[i]] <- c(t(b[2:length(b)] - estimate[2:length(estimate)]) %*% ginv(Cov) %*% (b[2:length(b)] - estimate[2:length(estimate)]))
@@ -613,6 +622,7 @@ NMAoutlier.measures <- function(TE, seTE, treat1, treat2, studlab,
 
 
     res <- list(dat = dat,
+                stud_id = stud_id,
                 eraw.deleted = unlist(eraw.deleted),
                 estand.deleted = unlist(estand.deleted),
                 estud.deleted = unlist(estud.deleted),
@@ -630,7 +640,6 @@ NMAoutlier.measures <- function(TE, seTE, treat1, treat2, studlab,
                 measure = measure)
 
   }
-
 
   class(res) <- "NMAoutlier.measures"
 

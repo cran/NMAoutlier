@@ -83,7 +83,7 @@
 #'
 #' @export
 #'
-#' @author Maria Petropoulou <maria.petropoulou@uniklinik-freiburg.de>
+#' @author Maria Petropoulou <m.petropoulou.a@gmail.com>
 
 
 measplot <- function(object, stat, measure = "simple"){
@@ -95,7 +95,7 @@ measplot <- function(object, stat, measure = "simple"){
     stat <- setchar(tolower(stat), c("estand", "estud",
                                     "mah", "leverage"))
 
-    stlab <- unique(object$dat[ ,3])
+    stlab <- unique(object$stud_id)
     xlabel <- "study"
 
     if (tolower(stat) == "estand") {
@@ -137,7 +137,7 @@ measplot <- function(object, stat, measure = "simple"){
                             "leverage.leaveoneout", "weight.leaveoneout", "heterog.leaveoneout", "covratio", "cook",
                             "rheterogeneity", "restimates", "rqhet", "rqinc", "rqtotal", "dfbetas"))
 
-    stlab <- unique(object$dat[ ,3])
+    stlab <- unique(c(object$stud_id))
     xlabel <- "study deleted"
 
    if (tolower(stat) == "estand.deleted") {
@@ -237,7 +237,7 @@ measplot <- function(object, stat, measure = "simple"){
       }
 
       xlabels <- factor(as.character(stlab), levels = as.character(stlab)) # as factor to prevent ggplot from reordering the x labels in alphabetical order
-      nt <- length(unique(c(object$dat[, 4], object$dat[, 5])))
+      nt <- length(unique(c(object$dat[, 5], object$dat[, 6])))
 
       graphs <- vector("list", nt - 1)
 

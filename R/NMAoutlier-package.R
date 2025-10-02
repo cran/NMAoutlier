@@ -81,7 +81,7 @@
 #' in publications.
 #'
 #' To report problems and bugs, please send an email to Dr. Maria
-#' Petropoulou \email{maria.petropoulou@uniklinik-freiburg.de}.
+#' Petropoulou \email{m.petropoulou.a@gmail.com}.
 #'
 #' The development version of \bold{NMAoutlier} is available on GitHub
 #' \url{https://github.com/petropouloumaria/NMAoutlier}.
@@ -90,7 +90,7 @@
 #'
 #' @docType package
 #'
-#' @author Petropoulou Maria \email{maria.petropoulou@uniklinik-freiburg.de}.
+#' @author Petropoulou Maria \email{m.petropoulou.a@gmail.com}.
 #'
 #' @references
 #' Dias S, Welton NJ, Caldwell DM, Ades AE (2010):

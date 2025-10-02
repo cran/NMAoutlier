@@ -88,6 +88,6 @@ measplot(deletion, "covratio", measure = "deletion")
 
 }
 \author{
-Maria Petropoulou <maria.petropoulou@uniklinik-freiburg.de>
+Maria Petropoulou <m.petropoulou.a@gmail.com>
 }
 \keyword{hplot}

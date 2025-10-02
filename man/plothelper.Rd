@@ -23,6 +23,6 @@ Vertical axis provides the iterations of FS algorithm.
 Horizontal axis provides a monitoring statistical measure in the methodology.
 }
 \author{
-Maria Petropoulou <maria.petropoulou@uniklinik-freiburg.de>
+Maria Petropoulou <m.petropoulou.a@gmail.com>
 }
 \keyword{internal}

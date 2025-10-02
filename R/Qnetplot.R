@@ -42,7 +42,7 @@
 #'
 #' @export
 #'
-#' @author Maria Petropoulou <maria.petropoulou@uniklinik-freiburg.de>
+#' @author Maria Petropoulou <m.petropoulou.a@gmail.com>
 
 
 Qnetplot <- function(data){

@@ -253,7 +253,7 @@
 #'
 #' @export
 #'
-#' @author Maria Petropoulou <maria.petropoulou@uniklinik-freiburg.de>
+#' @author Maria Petropoulou <m.petropoulou.a@gmail.com>
 
 
 NMAoutlier <- function(TE, seTE, treat1, treat2, studlab,
@@ -356,6 +356,8 @@ NMAoutlier <- function(TE, seTE, treat1, treat2, studlab,
   if (is.factor(treat2))
     treat2 <- as.character(treat2)
   ##
+  studlab.orig <- studlab
+  ##
   if (!is.numeric(studlab))
     studlab <- as.numeric(as.factor(studlab))
 
@@ -369,6 +371,7 @@ NMAoutlier <- function(TE, seTE, treat1, treat2, studlab,
   ##
   if (any(excl)) {
     dat.NAs <- data.frame(studlab = studlab[excl],
+                          studlab.orig = studlab.orig[excl],
                           treat1 = treat1[excl],
                           treat2 = treat2[excl],
                           TE = format(round(TE[excl], 4)),
@@ -385,6 +388,7 @@ NMAoutlier <- function(TE, seTE, treat1, treat2, studlab,
              rowlab = rep("", sum(excl)))
     ##
     studlab <- studlab[!(excl)]
+    studlab.orig <- studlab.orig[!(excl)]
     treat1  <- treat1[!(excl)]
     treat2  <- treat2[!(excl)]
     TE      <- TE[!(excl)]
@@ -698,7 +702,7 @@ NMAoutlier <- function(TE, seTE, treat1, treat2, studlab,
     colnames(basic) <- paste("it=", iteration)
     rownames(basic) <- paste("study entered")
     ##
-    dat <- noquote(cbind(TE, seTE, studlab, treat1, treat2))
+    dat <- noquote(cbind(TE, seTE, studlab.orig, studlab, treat1, treat2))
     ##
     rownames(dat) <- c(1:length(TE))
     ##
